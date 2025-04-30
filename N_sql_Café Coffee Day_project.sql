@@ -7,7 +7,6 @@ describe coffee_shop_sales;
 
 -- 1 TOTAL SALES:
 select round(sum(transaction_qty * unit_price),2)as Total_Sales  from coffee_shop_sales;
-
 select round(sum(transaction_qty * unit_price),2)as Total_Sales  from coffee_shop_sales
 where month(transaction_date) = 5;
 
@@ -53,8 +52,6 @@ over(order by  month(transaction_date)) * 100 as Percentage_order_MOM
  group by 1
  order by 1;
 
-
-
 -- 5.TOTAL QUANTITY SOLD
 select sum(transaction_qty)  as Total_qty_sold from coffee_shop_sales;
 
@@ -88,6 +85,18 @@ group by month(transaction_date);
 select count(transaction_id) as Total_Order,sum(transaction_qty) as Total_Quantity,sum(unit_price * transaction_qty) as Total_Sales from coffee_shop_sales
 where transaction_date= '2023-05-18';  -- for date
 
+-- for Daliy sales
+
+SELECT 
+    DATE(transaction_date) as Date,
+    COUNT(transaction_id) AS Total_Order_Taken,
+    SUM(transaction_qty) AS Total_Quantity_sold,
+    SUM(unit_price * transaction_qty) AS Total_Sales
+FROM
+    coffee_shop_sales
+group by date(transaction_date);
+
+
 SELECT
     SUM(unit_price * transaction_qty) AS total_sales,
     SUM(transaction_qty) AS total_quantity_sold,
@@ -108,7 +117,8 @@ where dayofmonth(transaction_date)= 5;
 
 -- avg sales over period:
 
-select avg(transaction_qty * unit_price)from coffee_shop_sales;
+select avg(transaction_qty * unit_price)from coffee_shop_sales
+where month(transaction_date)= 5;
 
 -- or
 
@@ -125,7 +135,7 @@ group by transaction_date) as internal;
 select day(transaction_date) as Day_of_month, sum(transaction_qty * unit_price) as total_sales from coffee_shop_sales
 where month(transaction_date) = 5
 group by day(transaction_date)
-;
+; 
 
 -- COMPARING DAILY SALES WITH AVERAGE SALES – IF GREATER THAN “ABOVE AVERAGE” and LESSER THAN “BELOW AVERAGE”
 
@@ -134,8 +144,8 @@ select day_of_month,
 				when total_sale>avg_sale then 'Above Average'
                 when total_sale<avg_sale then 'Below Average'
                 else 'Average'
-		end As Sales_status,
-        total_sale from
+		end As Sales_status
+         from
         
         (select day(transaction_date) as day_of_month,
         sum(transaction_qty *unit_price ) as total_sale,
@@ -161,9 +171,8 @@ select
 -- 11. SALES BY STORE LOCATION:
 select * from coffee_shop_sales;
 
-select store_location,sum(transaction_qty *unit_price) as Total_Sales 
+select store_location,concat('$',round((sum(transaction_qty *unit_price)),2)) as Total_Sales 
 from coffee_shop_sales
-where month(transaction_date)
 group by store_location
 order by 2;
 
@@ -185,9 +194,8 @@ order by 2;
 
 -- 13.SALES BY PRODUCTS (TOP 10):
 
-select product_category,sum(transaction_qty *unit_price) as Total_Sales 
+select product_category,concat('$ ',round((sum(transaction_qty *unit_price)),2)) as Total_Sales
 from coffee_shop_sales
-where month(transaction_date)
 group by product_category
 order by 2 desc limit 10;
 
@@ -262,6 +270,4 @@ order by 1;
 
 select hour(transaction_time) from coffee_shop_sales;
 
--- 5. 
-
-
+describe coffee_shop_sales;
